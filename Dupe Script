@@ -1,0 +1,182 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+-- Persistent Variables
+local screenGuiExists = false
+local loadingProgress = 0 -- Tracks the loading percentage
+local secondGuiShown = false -- Tracks whether the second GUI is already shown
+
+local function showSecondGUI()
+    if secondGuiShown then return end
+    secondGuiShown = true
+
+    -- Second Screen GUI
+    local ScreenGui2 = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local TitleLabel = Instance.new("TextLabel")
+    local BackgroundBar = Instance.new("Frame")
+    local UIScale = Instance.new("UIScale")
+
+    -- Parent to CoreGui for persistence
+    ScreenGui2.Name = "SecondDupeLoader"
+    ScreenGui2.Parent = RunService:IsStudio() and LocalPlayer:WaitForChild("PlayerGui") or game:GetService("CoreGui")
+
+    -- Frame Properties
+    Frame.Name = "MainFrame"
+    Frame.Parent = ScreenGui2
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Frame.Size = UDim2.new(0, 350, 0, 200)
+    Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Black theme
+    Frame.BorderSizePixel = 0
+
+    local UICorner = Instance.new("UICorner", Frame)
+    UICorner.CornerRadius = UDim.new(0, 20)
+
+    -- TitleLabel for Second GUI
+    TitleLabel.Name = "Title"
+    TitleLabel.Parent = Frame
+    TitleLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+    TitleLabel.Position = UDim2.new(0.5, 0, 0.3, 0)
+    TitleLabel.Size = UDim2.new(0.9, 0, 0.2, 0)
+    TitleLabel.Text = "Loading all assets, please wait..."
+    TitleLabel.TextColor3 = Color3.fromRGB(85, 170, 255) -- A blue theme for difference
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.TextScaled = true
+    TitleLabel.TextStrokeTransparency = 0.5
+
+    -- UIScale for device compatibility
+    UIScale.Parent = ScreenGui2
+    UIScale.Scale = 1 -- Adjust for different resolutions
+end
+
+local function setupFirstGUI()
+    -- Check if the GUI already exists
+    if screenGuiExists then
+        return -- Prevent duplicate GUIs
+    end
+
+    screenGuiExists = true
+
+    -- First GUI Elements
+    local ScreenGui = Instance.new("ScreenGui")
+    local Frame = Instance.new("Frame")
+    local TitleLabel = Instance.new("TextLabel")
+    local PercentageLabel = Instance.new("TextLabel")
+    local LoadingBar = Instance.new("Frame")
+    local BackgroundBar = Instance.new("Frame")
+    local Gradient = Instance.new("UIGradient")
+    local UIScale = Instance.new("UIScale")
+
+    -- Parent ScreenGui to CoreGui for persistence
+    ScreenGui.Name = "PersistentDupeLoader"
+    ScreenGui.Parent = RunService:IsStudio() and LocalPlayer:WaitForChild("PlayerGui") or game:GetService("CoreGui")
+
+    -- Frame Properties
+    Frame.Name = "MainFrame"
+    Frame.Parent = ScreenGui
+    Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    Frame.Size = UDim2.new(0, 350, 0, 200)
+    Frame.BackgroundColor3 = Color3.fromRGB(75, 0, 130)
+    Frame.BorderSizePixel = 0
+    Frame.ClipsDescendants = true
+
+    local UICorner = Instance.new("UICorner", Frame)
+    UICorner.CornerRadius = UDim.new(0, 20)
+
+    -- Gradient for Frame
+    Gradient.Parent = Frame
+    Gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(75, 0, 130)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
+    }
+    Gradient.Rotation = 45
+
+    -- TitleLabel Properties
+    TitleLabel.Name = "Title"
+    TitleLabel.Parent = Frame
+    TitleLabel.AnchorPoint = Vector2.new(0.5, 0.2)
+    TitleLabel.Position = UDim2.new(0.5, 0, 0.15, 0)
+    TitleLabel.Size = UDim2.new(0.9, 0, 0.2, 0)
+    TitleLabel.Text = "Dupe Script is Loading"
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.BackgroundTransparency = 1
+    TitleLabel.Font = Enum.Font.GothamBold
+    TitleLabel.TextScaled = true
+    TitleLabel.TextStrokeTransparency = 0.5
+
+    -- Animated Title
+    spawn(function()
+        while loadingProgress < 100 do
+            wait(2)
+            TitleLabel.Text = "Made By Sylo💎"
+            wait(2)
+            TitleLabel.Text = "Dupe Script is Loading"
+        end
+    end)
+
+    -- BackgroundBar Properties
+    BackgroundBar.Name = "BackgroundBar"
+    BackgroundBar.Parent = Frame
+    BackgroundBar.AnchorPoint = Vector2.new(0.5, 0.5)
+    BackgroundBar.Position = UDim2.new(0.5, 0, 0.6, 0)
+    BackgroundBar.Size = UDim2.new(0.8, 0, 0.15, 0)
+    BackgroundBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    BackgroundBar.BorderSizePixel = 0
+
+    local BackgroundUICorner = Instance.new("UICorner", BackgroundBar)
+    BackgroundUICorner.CornerRadius = UDim.new(0, 10)
+
+    -- LoadingBar Properties
+    LoadingBar.Name = "LoadingBar"
+    LoadingBar.Parent = BackgroundBar
+    LoadingBar.Size = UDim2.new(loadingProgress / 100, 0, 1, 0) -- Keeps progress
+    LoadingBar.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
+    LoadingBar.BorderSizePixel = 0
+
+    local LoadingUICorner = Instance.new("UICorner", LoadingBar)
+    LoadingUICorner.CornerRadius = UDim.new(0, 10)
+
+    -- PercentageLabel Properties
+    PercentageLabel.Name = "Percentage"
+    PercentageLabel.Parent = Frame
+    PercentageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+    PercentageLabel.Position = UDim2.new(0.5, 0, 0.8, 0)
+    PercentageLabel.Size = UDim2.new(0.5, 0, 0.1, 0)
+    PercentageLabel.Text = loadingProgress .. "%"
+    PercentageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    PercentageLabel.BackgroundTransparency = 1
+    PercentageLabel.Font = Enum.Font.Gotham
+    PercentageLabel.TextScaled = true
+    PercentageLabel.TextStrokeTransparency = 0.5
+
+    -- UIScale for device compatibility
+    UIScale.Parent = ScreenGui
+    UIScale.Scale = 1 -- Adjust as needed
+
+    -- Loading Animation
+    spawn(function()
+        for i = loadingProgress + 1, 100 do
+            loadingProgress = i
+            LoadingBar.Size = UDim2.new(loadingProgress / 100, 0, 1, 0)
+            PercentageLabel.Text = loadingProgress .. "%"
+            wait(2) -- Adjust speed as needed
+
+            if loadingProgress == 100 then
+                -- Show the second GUI after loading completes
+                showSecondGUI()
+            end
+        end
+    end)
+end
+
+-- Initialize the first GUI
+setupFirstGUI()
+
+-- Ensure the GUI persists across respawns without resetting values
+LocalPlayer.CharacterAdded:Connect(function()
+    setupFirstGUI()
+end)
